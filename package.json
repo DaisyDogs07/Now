@@ -1,0 +1,7 @@
+{
+  "name": "now",
+  "version": "v1.0.0",
+  "main": "./build/Release/now.node",
+  "author": "DaisyDogs07",
+  "license": "ISC"
+}

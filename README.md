@@ -1,0 +1,1 @@
+A faster, More direct version of performance.now()
