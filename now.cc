@@ -2,11 +2,17 @@
 #if defined(V8_OS_MACOSX)
 #include <mach/mach_time.h>
 #include <pthread.h>
+static struct mach_timebase_info info;
+{
+  kern_return_t result = mach_timebase_info(&info);
+  if (result != KERN_SUCCESS)
+    std::abort();
+}
 #elif defined(V8_OS_POSIX)
 #include <sys/time.h>
 #include <unistd.h>
 #elif defined(V8_OS_WIN)
-double fr;
+static double fr;
 {
   LARGE_INTEGER li;
   if (!QueryPerformanceFrequency(&li))
@@ -22,12 +28,6 @@ using namespace v8;
 
 inline double GetNow() {
 #if defined(V8_OS_MACOSX)
-  static struct mach_timebase_info info;
-  if (info.denom == 0) {
-    kern_return_t result = mach_timebase_info(&info);
-    if (result != KERN_SUCCESS)
-      std::abort();
-  }
   return (static_cast<double>(
     mach_absolute_time() * (info.numer / info.denom)
   ) / 1000000.0) + 1.0;
