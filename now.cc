@@ -35,7 +35,7 @@ inline double GetNow() {
 #elif defined(V8_OS_SOLARIS)
   return (static_cast<double>(gethrtime()) / 1000000.0) + 1.0;
 #elif defined(V8_OS_FUCHSIA)
-  return static_cast<double>(zx_clock_get_monotonic()) / 1000000.0;
+  return (static_cast<double>(zx_clock_get_monotonic()) / 1000000.0) + 1.0;
 #elif defined(V8_OS_POSIX)
 #if (defined(_POSIX_MONOTONIC_CLOCK) && _POSIX_MONOTONIC_CLOCK >= 0) || \
   defined(V8_OS_BSD) || defined(V8_OS_ANDROID)
