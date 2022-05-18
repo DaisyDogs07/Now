@@ -1,16 +1,17 @@
 #include "v8config.h"
-#if defined(V8_OS_MACOSX)
+#if defined(V8_OS_POSIX)
+#include <sys/time.h>
+#include <unistd.h>
+#elif defined(V8_OS_DARWIN)
 #include <mach/mach_time.h>
-#include <pthread.h>
 static struct mach_timebase_info info;
 {
   kern_return_t result = mach_timebase_info(&info);
   if (result != KERN_SUCCESS)
     std::abort();
 }
-#elif defined(V8_OS_POSIX)
-#include <sys/time.h>
-#include <unistd.h>
+#elif defined(V8_OS_FUCHSIA)
+#include <zircon/syscalls.h>
 #elif defined(V8_OS_WIN)
 static double fr;
 {
@@ -27,12 +28,14 @@ static double fr;
 using namespace v8;
 
 inline double GetNow() {
-#if defined(V8_OS_MACOSX)
-  return (static_cast<double>(
-    mach_absolute_time() * (info.numer / info.denom)
-  ) / 1000000.0) + 1.0;
+#if defined(V8_OS_DARWIN)
+  return (((static_cast<double>(
+    mach_absolute_time()
+  ) / 1000000.0) * info.numer) / info.denom) + 1.0;
 #elif defined(V8_OS_SOLARIS)
   return (static_cast<double>(gethrtime()) / 1000000.0) + 1.0;
+#elif defined(V8_OS_FUCHSIA)
+  return static_cast<double>(zx_clock_get_monotonic()) / 1000000.0;
 #elif defined(V8_OS_POSIX)
 #if (defined(_POSIX_MONOTONIC_CLOCK) && _POSIX_MONOTONIC_CLOCK >= 0) || \
   defined(V8_OS_BSD) || defined(V8_OS_ANDROID)
