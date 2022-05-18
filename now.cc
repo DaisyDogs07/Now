@@ -20,7 +20,7 @@ double fr;
 
 using namespace v8;
 
-double GetNow() {
+inline double GetNow() {
 #if defined(V8_OS_MACOSX)
   static struct mach_timebase_info info;
   if (info.denom == 0) {
