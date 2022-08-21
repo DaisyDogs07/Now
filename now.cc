@@ -13,7 +13,8 @@ static struct mach_timebase_info info;
 #elif defined(V8_OS_FUCHSIA)
 #include <zircon/syscalls.h>
 #elif defined(V8_OS_WIN)
-static double fr;
+#include <windows.h>
+double fr;
 {
   LARGE_INTEGER li;
   if (!QueryPerformanceFrequency(&li))
