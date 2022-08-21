@@ -14,13 +14,6 @@ static struct mach_timebase_info info;
 #include <zircon/syscalls.h>
 #elif defined(V8_OS_WIN)
 #include <windows.h>
-double fr;
-{
-  LARGE_INTEGER li;
-  if (!QueryPerformanceFrequency(&li))
-    std::abort();
-  fr = static_cast<double>(li.QuadPart) / 1000.0;
-}
 #elif defined(V8_OS_STARBOARD)
 #include "starboard/time.h"
 #endif
@@ -49,6 +42,13 @@ inline double GetNow() {
   return 0.0;
 #endif
 #elif defined(V8_OS_WIN)
+  static double fr;
+  if (!fr) {
+    LARGE_INTEGER li;
+    if (!QueryPerformanceFrequency(&li))
+      std::abort();
+    fr = static_cast<double>(li.QuadPart) / 1000.0;
+  }
   LARGE_INTEGER pc;
   if (!QueryPerformanceCounter(&pc))
     std::abort();
